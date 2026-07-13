@@ -1,0 +1,65 @@
+const Property = require("../models/Property");
+
+const addProperty = async (req, res) => {
+  try {
+    const { title, description, location, rent } = req.body;
+
+    const property = await Property.create({
+      title,
+      description,
+      location,
+      rent,
+      owner: req.user.id,
+    });
+
+    res.status(201).json({
+      message: "Property added successfully",
+      property,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+const getProperties = async (req, res) => {
+  try {
+    const properties = await Property.find().populate(
+      "owner",
+      "name email phone"
+    );
+
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+const getPropertyById = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id).populate(
+      "owner",
+      "name email phone"
+    );
+
+    if (!property) {
+      return res.status(404).json({
+        message: "Property not found",
+      });
+    }
+
+    res.status(200).json(property);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports = {
+  addProperty,
+  getProperties,
+  getPropertyById,
+};
