@@ -57,9 +57,39 @@ const getPropertyById = async (req, res) => {
     });
   }
 };
+const updateProperty = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+
+    if (!property) {
+      return res.status(404).json({
+        message: "Property not found",
+      });
+    }
+
+    property.title = req.body.title || property.title;
+    property.description =
+      req.body.description || property.description;
+    property.location =
+      req.body.location || property.location;
+    property.rent = req.body.rent || property.rent;
+
+    const updatedProperty = await property.save();
+
+    res.status(200).json({
+      message: "Property updated successfully",
+      property: updatedProperty,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   addProperty,
   getProperties,
   getPropertyById,
+  updateProperty,
 };
