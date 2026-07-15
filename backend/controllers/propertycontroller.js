@@ -57,6 +57,43 @@ const getPropertyById = async (req, res) => {
     });
   }
 };
+const searchProperties = async (req, res) => {
+  try {
+    const { location, minRent, maxRent } = req.query;
+
+    let query = {};
+
+    if (location) {
+      query.location = {
+        $regex: location,
+        $options: "i",
+      };
+    }
+
+    if (minRent || maxRent) {
+      query.rent = {};
+
+      if (minRent) {
+        query.rent.$gte = Number(minRent);
+      }
+
+      if (maxRent) {
+        query.rent.$lte = Number(maxRent);
+      }
+    }
+
+    const properties = await Property.find(query).populate(
+      "owner",
+      "name email phone"
+    );
+
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 const updateProperty = async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -112,6 +149,7 @@ const deleteProperty = async (req, res) => {
 module.exports = {
   addProperty,
   getProperties,
+  searchProperties,
   getPropertyById,
   updateProperty,
   deleteProperty,
