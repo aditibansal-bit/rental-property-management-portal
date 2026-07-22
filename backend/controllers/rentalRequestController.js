@@ -4,6 +4,16 @@ const createRentalRequest = async (req, res) => {
   try {
     const { property } = req.body;
 
+    const existingRequest = await RentalRequest.findOne({
+  property,
+  tenant: req.user.id,
+});
+if (existingRequest) {
+  return res.status(400).json({
+    message: "You have already requested this property.",
+  });
+}
+
     const request = await RentalRequest.create({
       property,
       tenant: req.user.id,

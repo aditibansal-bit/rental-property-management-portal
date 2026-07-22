@@ -6,18 +6,33 @@ const propertySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     description: {
       type: String,
       required: true,
     },
+
     location: {
       type: String,
       required: true,
     },
+
     rent: {
       type: Number,
       required: true,
     },
+
+    image: {
+      type: String,
+      default: "",
+    },
+
+    status: {
+      type: String,
+      enum: ["Available", "Rented"],
+      default: "Available",
+    },
+
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
